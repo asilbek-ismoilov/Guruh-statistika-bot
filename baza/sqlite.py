@@ -92,6 +92,33 @@ class Database:
 
     def all_users_id(self):
         return self.execute("SELECT telegram_id FROM Users;", fetchall=True)
+        
+    def all_added_count(self, group_id: int):
+
+        # Avval guruhdagi barcha foydalanuvchilarni olamiz
+        sql_users = """
+        SELECT telegram_id, full_name 
+        FROM GROUPS 
+        WHERE group_id = ? 
+        GROUP BY telegram_id, full_name;
+        """
+        users = self.execute(sql_users, (group_id,), fetchall=True)
+
+        # Har bir foydalanuvchi uchun qo'shgan odamlar sonini hisoblaymiz
+        result = []
+        for user in users:
+            telegram_id, full_name = user
+            sql_count = """
+            SELECT COUNT(*) 
+            FROM GROUPS 
+            WHERE add_id = ? AND group_id = ?;
+            """
+            invite_count = self.execute(sql_count, (telegram_id, group_id), fetchone=True)[0] or 0
+            result.append((telegram_id, full_name, invite_count))
+
+        # Natijani invite_count bo'yicha kamayib borish tartibida saralaymiz
+        result.sort(key=lambda x: x[2], reverse=True)
+        return result
     
 def logger(statement):
     print(f"""

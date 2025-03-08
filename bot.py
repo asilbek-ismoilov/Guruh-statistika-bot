@@ -16,7 +16,7 @@ async def on_startup_notify(bot: Bot):
         except Exception as err:
             logging.exception(err)
 
-#bot ishdan to'xtadi xabarini yuborish
+#bot ishdan to'xtadi xabarini yuborish  
 @dp.shutdown()
 async def off_startup_notify(bot: Bot):
     for admin in ADMINS:

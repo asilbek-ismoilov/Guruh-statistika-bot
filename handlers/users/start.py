@@ -3,7 +3,6 @@ from loader import dp,db, private
 from aiogram.filters import CommandStart
 
 
-
 @dp.message(CommandStart(), private)
 async def start_command(message:Message):
     full_name = message.from_user.full_name
