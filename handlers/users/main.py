@@ -1,8 +1,9 @@
+import re
 import asyncio
 from aiogram import F
 from time import time
 from aiogram.filters import and_f
-from loader import dp, db, supergroup, bot, ADMINS
+from loader import dp, supergroup, bot, ADMINS
 from filters.admin import IsBotAdminFilter
 from aiogram.types import Message, ChatPermissions, input_file
 
@@ -64,41 +65,74 @@ async def setphoto_group(message:Message):
     await message.chat.set_photo(photo=input_file.BufferedInputFile(file=file,filename="asd.jpg"))
     await message.answer("Gruh rasmi uzgardi")
 
-# Xaqoratli so'zlar
+# Xaqoratli so'zlar va foydalanuvchi ogohlantirishlarini saqlash lug'ati
 
 user_warnings = {}
-
 xaqoratli_sozlar = {"tentak", "jinni", "to'poy", "axmoq", "ahmoq", "tupoy", "lanati", "xarom"}
 
-@dp.message(F.chat.func(lambda chat: chat.type == "supergroup"), F.text)
-async def tozalash(message: Message):
-    user_id = message.from_user.id
+@dp.message(F.text, supergroup)
+async def combined_filter(message: Message):
     text = message.text.lower()
+    user_id = message.from_user.id
 
-    # Agar foydalanuvchi oldin so‘kingan bo‘lsa, uning ogohlantirish sonini oshiramiz
-    if user_id not in user_warnings:
-        user_warnings[user_id] = 0
+    # Agar xabar '/' bilan boshlansa, uni o'chirib tashlaymiz
+    if text.startswith("/"):
+        await message.delete()
+        return
 
-    # Xabarni xaqoratli so‘zlarga tekshiramiz
+    # Reklama (link) aniqlash: http:// yoki https://
+    if re.search(r'https?://', message.text):
+        await message.delete()  # Reklama xabarini o'chiramiz
+        until_date = int(time()) + 300  # 5 daqiqa (300 soniya)
+        permission = ChatPermissions(can_send_messages=False)
+        await message.chat.restrict(
+            user_id=user_id,
+            permissions=permission,
+            until_date=until_date
+        )
+        mute_msg = await message.answer(
+            f"{message.from_user.mention_html()}, reklamadan foydalanib mumkin emas ❗\n5 minutga bloklandingiz",
+            parse_mode="HTML"
+        )
+        await asyncio.sleep(60)
+        await mute_msg.delete()
+        return
+
+    # Xabarni xaqoratli so'zlar bo'yicha tekshiramiz
     for soz in xaqoratli_sozlar:
         if soz in text:
-            user_warnings[user_id] += 1  # Ogohlantirishni oshiramiz
-            await message.delete()  # So‘kinish xabarini o‘chirib tashlaymiz
+            if user_id not in user_warnings:
+                user_warnings[user_id] = 0
+            user_warnings[user_id] += 1
+            await message.delete()
 
             if user_warnings[user_id] == 1:
-                first_message = await message.answer(f"{message.from_user.mention_html()} ❗ Bu birinchi ogohlantirish! Guruhda so‘kinmang.", parse_mode="HTML")
+                first_message = await message.answer(
+                    f"{message.from_user.mention_html()} ❗ Bu birinchi ogohlantirish! Guruhda so'kinmang.",
+                    parse_mode="HTML"
+                )
                 await asyncio.sleep(60)
                 await first_message.delete()
             elif user_warnings[user_id] == 2:
-                until_date = int(time()) + 600  # 10 daqiqaga mute
+                until_date = int(time()) + 600  # 10 daqiqa (600 soniya)
                 permission = ChatPermissions(can_send_messages=False)
-                await message.chat.restrict(user_id=user_id, permissions=permission, until_date=until_date)
-                second_message = await message.answer(f"{message.from_user.mention_html()} 🔇 10 daqiqaga yozish huquqingiz cheklandi!", parse_mode="HTML")
+                await message.chat.restrict(
+                    user_id=user_id,
+                    permissions=permission,
+                    until_date=until_date
+                )
+                second_message = await message.answer(
+                    f"{message.from_user.mention_html()} 🔇 10 daqiqaga yozish huquqingiz cheklandi!",
+                    parse_mode="HTML"
+                )
                 await asyncio.sleep(60)
                 await second_message.delete()
             elif user_warnings[user_id] >= 3:
-                await message.chat.ban_sender_chat(user_id)  # Butun umrga ban
-                third_message = await message.answer(f"{message.from_user.mention_html()} 🚫 Siz guruhdan butunlay bloklandingiz!", parse_mode="HTML")
+                await message.chat.ban_sender_chat(user_id)  # Butun umrga bloklash
+                third_message = await message.answer(
+                    f"{message.from_user.mention_html()} 🚫 Siz guruhdan butunlay bloklandingiz!",
+                    parse_mode="HTML"
+                )
                 await asyncio.sleep(60)
-                third_message.delete()
+                await third_message.delete()
             break

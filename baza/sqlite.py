@@ -120,6 +120,28 @@ class Database:
         result.sort(key=lambda x: x[2], reverse=True)
         return result
     
+    def top_added_count(self, group_id: int):
+        """
+        Eng ko‘p odam qo‘shgan 10 ta foydalanuvchini to‘g‘ridan-to‘g‘ri SQL so‘rovi bilan qaytaradi.
+        """
+        sql = """
+        SELECT 
+            g.telegram_id, 
+            g.full_name, 
+            COUNT(inv.add_id) AS invite_count
+        FROM GROUPS g
+        LEFT JOIN (
+            SELECT add_id
+            FROM GROUPS
+            WHERE group_id = ? AND add_id <> 0
+        ) inv ON g.telegram_id = inv.add_id
+        WHERE g.group_id = ?
+        GROUP BY g.telegram_id, g.full_name
+        ORDER BY invite_count DESC
+        LIMIT 10;
+        """
+        return self.execute(sql, (group_id, group_id), fetchall=True)
+        
 def logger(statement):
     print(f"""
 _____________________________________________________        

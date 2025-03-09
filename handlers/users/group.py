@@ -52,11 +52,12 @@ async def my_info(message: Message):
     await message.delete()
     user_id = message.from_user.id
     group_id = message.chat.id
+    full_name = message.from_user.full_name
     
     added_count = db.get_added_count(user_id, group_id)
     
     text = (
-        "<blockquote>Sizning guruhdagi statistikangiz:</blockquote>\n\n"
+        f"<blockquote><a href='tg://user?id={user_id}'>{full_name}</a> guruhdagi statistikangiz:</blockquote>\n\n"
         "📊 <b>Sizning statistikangiz:</b>\n"
         f"👥 Siz jami <b>{added_count}</b> ta odam qo'shgansiz"
     )
@@ -65,17 +66,34 @@ async def my_info(message: Message):
     await asyncio.sleep(60)
     await msg.delete()
 
+# @dp.message(F.text == "/stats", IsBotAdminFilter(ADMINS))
+# async def stats(message: Message):
+#     await message.delete()
+#     group_id = message.chat.id
+    
+#     # Berilgan guruh uchun barcha foydalanuvchilarning taklif (invite) statistikasi
+#     stats_list = db.all_added_count(group_id)
+    
+#     lines = ["<blockquote>📊 Guruhdagi statistikasi:</blockquote>", ""]
+#     for telegram_id, full_name, invite_count in stats_list:
+#         lines.append(f"👤 <b><a href='tg://user?id={telegram_id}'>{full_name}</a></b> - <b>{invite_count}</b> ta odam qo'shgan")
+    
+#     text = "\n".join(lines)
+#     msg = await message.answer(text, parse_mode="HTML")
+#     await asyncio.sleep(60)
+#     await msg.delete()
+
 @dp.message(F.text == "/stats", IsBotAdminFilter(ADMINS))
 async def stats(message: Message):
     await message.delete()
     group_id = message.chat.id
     
-    # Berilgan guruh uchun barcha foydalanuvchilarning taklif (invite) statistikasi
+    # Berilgan guruh uchun eng ko‘p odam qo‘shgan 10 ta foydalanuvchi statistikasi
     stats_list = db.all_added_count(group_id)
     
     lines = ["<blockquote>📊 Guruhdagi statistikasi:</blockquote>", ""]
     for telegram_id, full_name, invite_count in stats_list:
-        lines.append(f"👤 <b>{full_name}</b> (ID: <code>{telegram_id}</code>) - <b>{invite_count}</b> ta odam qo'shgan")
+        lines.append(f"👤 <b><a href='tg://user?id={telegram_id}'>{full_name}</a></b> - <b>{invite_count}</b> ta odam qo‘shgan")
     
     text = "\n".join(lines)
     msg = await message.answer(text, parse_mode="HTML")
