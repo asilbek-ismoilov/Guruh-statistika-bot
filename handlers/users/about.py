@@ -2,7 +2,7 @@ from aiogram.types import Message
 from loader import dp, private
 from aiogram.filters import Command
 
-@dp.message(Command("about"))
+@dp.message(Command("about"), private)
 async def about_command(message: Message):
     about_text = (
         "<b>Guruh bilan ishlash Boti haqida:</b>\n\n"

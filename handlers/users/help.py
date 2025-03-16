@@ -2,7 +2,7 @@ from loader import dp, private
 from aiogram.types import Message
 from aiogram.filters import Command
 
-@dp.message(Command("help"))
+@dp.message(Command("help"), private)
 async def help_command(message: Message):
     help_text = (
         "<b>Guruh Botining Buyruqlari:</b>\n\n"

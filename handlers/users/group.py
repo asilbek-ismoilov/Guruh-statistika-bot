@@ -1,12 +1,12 @@
 import asyncio
 from aiogram import F
-from loader import db,dp, ADMINS
+from loader import db,dp, ADMINS, group, supergroup
 from aiogram.types import Message
 from filters.admin import IsBotAdminFilter
 
 # Yangi foydalanuvchi qo'shilganda
 
-@dp.message(F.new_chat_members)
+@dp.message(F.new_chat_members, group, supergroup)
 async def new_member(message: Message):
     adder = message.from_user  
     group_id = message.chat.id 
@@ -32,7 +32,7 @@ async def new_member(message: Message):
 
 # Foydalanuvchi chiqib ketsa
 
-@dp.message(F.left_chat_member)
+@dp.message(F.left_chat_member, group, supergroup)
 async def left_member(message: Message):
     left_user = message.left_chat_member
     user_id = left_user.id
@@ -47,7 +47,7 @@ async def left_member(message: Message):
     await msg.delete()
 
 
-@dp.message(F.text == "/my_info")
+@dp.message(F.text == "/my_info", group, supergroup)
 async def my_info(message: Message):
     await message.delete()
     user_id = message.from_user.id
@@ -83,7 +83,7 @@ async def my_info(message: Message):
 #     await asyncio.sleep(60)
 #     await msg.delete()
 
-@dp.message(F.text == "/stats", IsBotAdminFilter(ADMINS))
+@dp.message(F.text == "/stats", IsBotAdminFilter(ADMINS), group, supergroup)
 async def stats(message: Message):
     await message.delete()
     group_id = message.chat.id

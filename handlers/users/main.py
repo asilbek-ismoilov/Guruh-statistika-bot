@@ -3,14 +3,14 @@ import asyncio
 from aiogram import F
 from time import time
 from aiogram.filters import and_f
-from loader import dp, supergroup, bot, ADMINS
+from loader import dp, group, supergroup, bot, ADMINS
 from filters.admin import IsBotAdminFilter
 from aiogram.types import Message, ChatPermissions, input_file
 
 
 # BAN BO'LISHI VA BAN DAN OCHISH
 
-@dp.message(and_f(F.reply_to_message, F.text == "/ban"), IsBotAdminFilter(ADMINS))
+@dp.message(and_f(F.reply_to_message, F.text == "/ban"), IsBotAdminFilter(ADMINS),  group, supergroup)
 async def ban_user(message: Message):
     await message.delete()
     await message.chat.ban_sender_chat(message.reply_to_message.from_user.id)
@@ -18,7 +18,7 @@ async def ban_user(message: Message):
     await asyncio.sleep(60)
     await txt.delete()
 
-@dp.message(and_f(F.reply_to_message, F.text == "/unban"), IsBotAdminFilter(ADMINS))
+@dp.message(and_f(F.reply_to_message, F.text == "/unban"), IsBotAdminFilter(ADMINS), group, supergroup)
 async def unban_user(message: Message):
     await message.delete()
     await message.chat.unban_sender_chat(message.reply_to_message.from_user.id)
@@ -28,7 +28,7 @@ async def unban_user(message: Message):
 
 # Mute qilish (moslashuvchan vaqt bilan)
 
-@dp.message(and_f(F.reply_to_message, F.text == "/mute"), IsBotAdminFilter(ADMINS))
+@dp.message(and_f(F.reply_to_message, F.text == "/mute"), IsBotAdminFilter(ADMINS), group, supergroup)
 async def mute_user(message: Message):
     await message.delete()
     await message.chat.restrict(
@@ -41,7 +41,7 @@ async def mute_user(message: Message):
     await msg.delete()
 
 
-@dp.message(and_f(F.reply_to_message, F.text == "/unmute"), IsBotAdminFilter(ADMINS))
+@dp.message(and_f(F.reply_to_message, F.text == "/unmute"), IsBotAdminFilter(ADMINS),  group, supergroup)
 async def unmute_user(message: Message):
     await message.delete()
     await message.chat.restrict(
@@ -54,7 +54,7 @@ async def unmute_user(message: Message):
 
 # Guruh rasmini o'rnatish
 
-@dp.message(and_f(F.reply_to_message.photo,F.text=="/setphoto"), supergroup, IsBotAdminFilter(ADMINS))
+@dp.message(and_f(F.reply_to_message.photo,F.text=="/setphoto"),  group, supergroup, IsBotAdminFilter(ADMINS))
 async def setphoto_group(message:Message):
     await message.delete()
     photo =  message.reply_to_message.photo[-1].file_id
@@ -75,7 +75,7 @@ xaqoratli_sozlar = {"tentak", "jinni", "to'poy", "axmoq", "ahmoq", "tupoy", "lan
 link_pattern = re.compile(r"(https?://\S+|www\.\S+|\S+\.(com|uz|net|org|ru|ly|io|me|t.me|telegram.me)\S*)")
 
 # Barcha xabarlarni superguruhda tekshirish uchun handler
-@dp.message(F.text, supergroup)
+@dp.message(F.text,  group, supergroup)
 async def combined_filter(message: Message):
     user_id = message.from_user.id
     chat_id = message.chat.id
