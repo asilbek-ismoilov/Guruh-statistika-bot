@@ -9,9 +9,15 @@ from aiogram.types import Message, ChatPermissions, input_file
 
 
 # BAN BO'LISHI VA BAN DAN OCHISH
-
-@dp.message(and_f(F.reply_to_message, F.text == "/ban"), IsBotAdminFilter(ADMINS),  group, supergroup)
+@dp.message(and_f(F.reply_to_message, F.text == "/ban"), group, supergroup)
 async def ban_user(message: Message):
+    # Chatdagi adminlarni olish
+    chat_admins = await message.chat.get_administrators()
+    # Komandani yuboruvchi admin ekanligini tekshirish
+    if message.from_user.id not in [admin.user.id for admin in chat_admins]:
+        await message.answer("Siz admin emassiz!")
+        return
+
     await message.delete()
     await message.chat.ban_sender_chat(message.reply_to_message.from_user.id)
     txt = await message.answer(f"{message.reply_to_message.from_user.first_name} guruhdan chiqarildi.")
