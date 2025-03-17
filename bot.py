@@ -26,19 +26,18 @@ async def off_startup_notify(bot: Bot):
             logging.exception(err)
 
 
-def setup_middlewares(dispatcher: Dispatcher, bot: Bot) -> None:
-    """MIDDLEWARE"""
-    from middlewares.throttling import ThrottlingMiddleware
+# def setup_middlewares(dispatcher: Dispatcher, bot: Bot) -> None:
+#     """MIDDLEWARE"""
+#     from middlewares.throttling import ThrottlingMiddleware
 
-    # Spamdan himoya qilish uchun klassik ichki o'rta dastur. So'rovlar orasidagi asosiy vaqtlar 0,5 soniya
-    dispatcher.message.middleware(ThrottlingMiddleware(slow_mode_delay=0.5))
+#     # Spamdan himoya qilish uchun klassik ichki o'rta dastur. So'rovlar orasidagi asosiy vaqtlar 0,5 soniya
+#     dispatcher.message.middleware(ThrottlingMiddleware(slow_mode_delay=0.5))
 
 
 async def main() -> None:
     await set_default_commands(bot)
     db.create_table_users()
     db.create_table_group_users()
-    setup_middlewares(dispatcher=dp, bot=bot)
     await dp.start_polling(bot)
 
 
