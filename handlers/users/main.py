@@ -16,7 +16,10 @@ async def is_admin_or_owner(message: Message):
 @dp.message(and_f(F.reply_to_message, F.text == "/ban"), group | supergroup)
 async def ban_user(message: Message):
     if not await is_admin_or_owner(message):
-        await message.answer("❌ Siz admin emassiz!")
+        await message.delete()
+        txt = await message.answer("❌ Siz admin emassiz!")
+        await asyncio.sleep(60)
+        await txt.delete()
         return
 
     if message.reply_to_message.from_user.id in [admin.user.id for admin in await message.chat.get_administrators()]:
@@ -33,7 +36,10 @@ async def ban_user(message: Message):
 @dp.message(and_f(F.reply_to_message, F.text == "/unban"), group | supergroup)
 async def unban_user(message: Message):
     if not await is_admin_or_owner(message):
-        await message.answer("❌ Siz admin emassiz!")
+        await message.delete()
+        txt = await message.answer("❌ Siz admin emassiz!")
+        await asyncio.sleep(60)
+        await txt.delete()
         return
 
     await message.delete()
@@ -47,7 +53,10 @@ async def unban_user(message: Message):
 @dp.message(and_f(F.reply_to_message, F.text == "/mute"), group | supergroup)
 async def mute_user(message: Message):
     if not await is_admin_or_owner(message):
-        await message.answer("❌ Siz admin emassiz!")
+        await message.delete()
+        txt = await message.answer("❌ Siz admin emassiz!")
+        await asyncio.sleep(60)
+        await txt.delete()
         return
 
     if message.reply_to_message.from_user.id in [admin.user.id for admin in await message.chat.get_administrators()]:
@@ -67,7 +76,10 @@ async def mute_user(message: Message):
 @dp.message(and_f(F.reply_to_message, F.text == "/unmute"), group | supergroup)
 async def unmute_user(message: Message):
     if not await is_admin_or_owner(message):
-        await message.answer("❌ Siz admin emassiz!")
+        await message.delete()
+        txt = await message.answer("❌ Siz admin emassiz!")
+        await asyncio.sleep(60)
+        await txt.delete()
         return
 
     await message.delete()
@@ -83,7 +95,10 @@ async def unmute_user(message: Message):
 @dp.message(and_f(F.reply_to_message.photo, F.text == "/setphoto"), group | supergroup)
 async def setphoto_group(message: Message):
     if not await is_admin_or_owner(message):
-        await message.answer("❌ Siz admin emassiz!")
+        await message.delete()
+        txt = await message.answer("❌ Siz admin emassiz!")
+        await asyncio.sleep(60)
+        await txt.delete()
         return
 
     await message.delete()
