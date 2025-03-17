@@ -14,8 +14,13 @@ async def new_member(message: Message):
         adder_id = adder.id
         user_id = user.id
         user_full_name = user.full_name
+        adder_full_name = adder.full_name
 
         existing_user = db.get_user_by_id(user_id, group_id)
+        adder_user = db.get_user_by_id(adder_id, group_id)
+
+        if not adder_user:
+            db.add_group_user(telegram_id=adder_id, full_name=adder_full_name, add_id=0, group_id=group_id)
 
         if not existing_user:
             add_id = 0 if adder_id == user_id else adder_id
@@ -89,7 +94,8 @@ async def stats(message: Message):
     
     lines = [f"<blockquote>📊 Guruhdagi statistikasi:</blockquote> <b>Guruhda {count}</b> ta a'zo bor", ""]
     for telegram_id, full_name, invite_count in stats_list:
-        lines.append(f"👤 <b><a href='tg://user?id={telegram_id}'>{full_name}</a></b> - <b>{invite_count}</b> ta odam qo‘shgan")
+        if telegram_id not in [admin.user.id for admin in chat_admins]: 
+            lines.append(f"👤 <b><a href='tg://user?id={telegram_id}'>{full_name}</a></b> - <b>{invite_count}</b> ta odam qo‘shgan")
     
     text = "\n".join(lines)
     msg = await message.answer(text, parse_mode="HTML")
