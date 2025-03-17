@@ -88,9 +88,6 @@ async def stats(message: Message):
 
     await message.delete()
     group_id = message.chat.id
-
-    await message.delete()
-    group_id = message.chat.id
     
     # Berilgan guruh uchun eng ko‘p odam qo‘shgan 10 ta foydalanuvchi statistikasi
     stats_list = db.all_added_count(group_id)

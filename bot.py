@@ -1,6 +1,5 @@
 from loader import dp,bot,db,ADMINS
-from aiogram import Bot,Dispatcher
-from aiogram import F
+from aiogram import Bot
 import asyncio
 import logging
 import sys
@@ -24,14 +23,6 @@ async def off_startup_notify(bot: Bot):
             await bot.send_message(chat_id=int(admin),text="Bot ishdan to'xtadi!")
         except Exception as err:
             logging.exception(err)
-
-
-# def setup_middlewares(dispatcher: Dispatcher, bot: Bot) -> None:
-#     """MIDDLEWARE"""
-#     from middlewares.throttling import ThrottlingMiddleware
-
-#     # Spamdan himoya qilish uchun klassik ichki o'rta dastur. So'rovlar orasidagi asosiy vaqtlar 0,5 soniya
-#     dispatcher.message.middleware(ThrottlingMiddleware(slow_mode_delay=0.5))
 
 
 async def main() -> None:
