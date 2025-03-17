@@ -1,6 +1,6 @@
 import asyncio
 from aiogram import F
-from loader import db,dp, group, supergroup
+from loader import db,dp, group, supergroup, bot
 from aiogram.types import Message
 
 # Yangi foydalanuvchi qo'shilganda
@@ -74,17 +74,20 @@ async def my_info(message: Message):
 @dp.message(F.text == "/stats", group | supergroup)
 async def stats(message: Message):
     # Chatdagi adminlarni olish
-    chat_admins = await message.chat.get_administrators()
+    chat_admins = await bot.get_chat_administrators(message.chat.id)
+    admin_ids = {admin.user.id for admin in chat_admins}  # Adminlar ID ro‘yxati
     count = await message.chat.get_member_count()
     
     # Foydalanuvchi admin yoki guruh egasi ekanligini tekshirish
-    if message.from_user.id not in [admin.user.id for admin in chat_admins]:
+    if message.from_user.id not in admin_ids:
         await message.delete()
         msg = await message.answer("❌ Siz admin emassiz!")
         await asyncio.sleep(5)
         await msg.delete()
-        
         return
+
+    await message.delete()
+    group_id = message.chat.id
 
     await message.delete()
     group_id = message.chat.id
