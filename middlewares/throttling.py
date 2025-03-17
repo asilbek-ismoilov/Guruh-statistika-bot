@@ -1,9 +1,9 @@
 import time
-
 from aiogram.dispatcher.middlewares.base import BaseMiddleware
 from aiogram.types import Message
+from loader import private
 
-class ThrottlingMiddleware(BaseMiddleware):
+class ThrottlingMiddleware(BaseMiddleware, private):
     def __init__(self, slow_mode_delay=0.5):
         self.user_timeouts = {}
         self.slow_mode_delay = slow_mode_delay
