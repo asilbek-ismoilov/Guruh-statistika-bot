@@ -13,7 +13,7 @@ async def is_admin_or_owner(message: Message):
     return message.from_user.id in [admin.user.id for admin in chat_admins]
 
 # BAN BO‘LISHI VA BAN DAN OCHISH
-@dp.message(and_f(F.reply_to_message, F.text == "/ban"), group | supergroup)
+@dp.message(and_f(F.reply_to_message, F.text.in_({"/ban", "/ban@Gopihelper_bot"})), group | supergroup)
 async def ban_user(message: Message):
     if not await is_admin_or_owner(message):
         await message.delete()
@@ -33,7 +33,7 @@ async def ban_user(message: Message):
     await txt.delete()
 
 
-@dp.message(and_f(F.reply_to_message, F.text == "/unban"), group | supergroup)
+@dp.message(and_f(F.reply_to_message, F.text.in_({"/unban", "/unban@Gopihelper_bot"})), group | supergroup)
 async def unban_user(message: Message):
     if not await is_admin_or_owner(message):
         await message.delete()
@@ -50,7 +50,7 @@ async def unban_user(message: Message):
 
 
 # Mute qilish (moslashuvchan vaqt bilan)
-@dp.message(and_f(F.reply_to_message, F.text == "/mute"), group | supergroup)
+@dp.message(and_f(F.reply_to_message, F.text.in_({"/mute", "/mute@Gopihelper_bot"})), group | supergroup)
 async def mute_user(message: Message):
     if not await is_admin_or_owner(message):
         await message.delete()
@@ -73,7 +73,7 @@ async def mute_user(message: Message):
     await asyncio.sleep(60)
     await msg.delete()
 
-@dp.message(and_f(F.reply_to_message, F.text == "/unmute"), group | supergroup)
+@dp.message(and_f(F.reply_to_message, F.text.in_({"/unmute", "/unmute@Gopihelper_bot"})), group | supergroup)
 async def unmute_user(message: Message):
     if not await is_admin_or_owner(message):
         await message.delete()
@@ -90,27 +90,6 @@ async def unmute_user(message: Message):
     msg = await message.answer(f"✅ {message.reply_to_message.from_user.first_name} yana yozishi mumkin.")
     await asyncio.sleep(60)
     await msg.delete()
-
-# Guruh rasmini o‘rnatish
-@dp.message(and_f(F.reply_to_message.photo, F.text == "/setphoto"), group | supergroup)
-async def setphoto_group(message: Message):
-    if not await is_admin_or_owner(message):
-        await message.delete()
-        txt = await message.answer("❌ Siz admin emassiz!")
-        await asyncio.sleep(60)
-        await txt.delete()
-        return
-
-    await message.delete()
-    photo = message.reply_to_message.photo[-1].file_id
-    file = await bot.get_file(photo)
-    file_path = file.file_path
-    file = await bot.download_file(file_path)
-    file = file.read()
-
-    await message.chat.set_photo(photo=input_file.BufferedInputFile(file=file,filename="asd.jpg"))
-    await message.answer("🖼 Guruh rasmi o‘zgartirildi.")
-
 
 # Xaqoratli so'zlar va foydalanuvchi ogohlantirishlarini saqlash lug'ati
 

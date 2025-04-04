@@ -1,7 +1,8 @@
 import asyncio
 from aiogram import F
-from loader import db,dp, group, supergroup, bot, ADMINS
+from aiogram.filters import and_f
 from aiogram.types import Message
+from loader import db,dp, group, supergroup, bot, ADMINS
 
 # Yangi foydalanuvchi qo'shilganda
 
@@ -50,7 +51,10 @@ async def left_member(message: Message):
 
     db.delete_group_user(user_id, group_id)
 
-    msg = await message.answer(f"{left_user.full_name}, guruhni tark etdi. Xayr 👋")
+    try:
+        msg = await message.answer(f"{left_user.full_name}, guruhni tark etdi. Xayr 👋")
+    except:
+        print("Bot guruhdan chiqarilgan, xabar yuborilmadi.")
 
     try:
         await bot.delete_message(message.chat.id, message.message_id)
@@ -64,7 +68,7 @@ async def left_member(message: Message):
     await msg.delete()
 
 
-@dp.message(F.text == "/my_info", group | supergroup)
+@dp.message(F.text.in_({"/myinfo", "/myinfo@Gopihelper_bot"}), group | supergroup)
 async def my_info(message: Message):
     try:
         await bot.delete_message(message.chat.id, message.message_id)
@@ -90,7 +94,33 @@ async def my_info(message: Message):
     await msg.delete()
 
 
-@dp.message(F.text == "/stats", group | supergroup)
+@dp.message(and_f(F.reply_to_message, F.text.in_({"/userinfo", "/userinfo@Gopihelper_bot"})), group | supergroup)
+async def userinfo(message: Message):
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except Exception as e:
+        text = f"userinfo xabar o'chirishda xatolik: {e}"
+        for admin in ADMINS:
+            await bot.send_message(chat_id=int(admin),text=text)
+        print(text)
+
+    user_id = message.reply_to_message.from_user.id
+    group_id = message.chat.id
+    full_name = message.from_user.full_name
+    
+    added_count = db.get_added_count(user_id, group_id)
+    
+    text = (
+        f"<blockquote><a href='tg://user?id={user_id}'>{full_name}</a> guruhdagi statistikangiz:</blockquote>\n\n"
+        f"👥 <a href='tg://user?id={user_id}'>{full_name}</a> jami <b>{added_count}</b> ta odam qo'shgansiz"
+    )
+    msg = await message.answer(text, parse_mode="HTML")
+
+    await asyncio.sleep(60)
+    await msg.delete()
+
+
+@dp.message(F.text.in_({"/stats", "/stats@Gopihelper_bot"}), group | supergroup)
 async def stats(message: Message):
     # Chatdagi adminlarni olish
     chat_admins = await bot.get_chat_administrators(message.chat.id)
