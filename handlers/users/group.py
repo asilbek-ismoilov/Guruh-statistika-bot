@@ -1,6 +1,6 @@
 import asyncio
 from aiogram import F
-from loader import db,dp, group, supergroup, bot
+from loader import db,dp, group, supergroup, bot, ADMINS
 from aiogram.types import Message
 
 # Yangi foydalanuvchi qo'shilganda
@@ -29,7 +29,13 @@ async def new_member(message: Message):
         
         msg = await message.answer(f"👋 {user_full_name}, guruhga xush kelibsiz 🎉")
 
-    await message.delete()
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except Exception as e:
+        text = f"Qo'shilish xabar o'chirishda xatolik: {e}"
+        for admin in ADMINS:
+            await bot.send_message(chat_id=int(admin),text=text)
+        print(text)
 
     await asyncio.sleep(120)
     await msg.delete()
@@ -46,14 +52,27 @@ async def left_member(message: Message):
 
     msg = await message.answer(f"{left_user.full_name}, guruhni tark etdi. Xayr 👋")
 
-    await message.delete()
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except Exception as e:
+        text = f"Tark etgan xabar o'chirishda xatolik: {e}"
+        for admin in ADMINS:
+            await bot.send_message(chat_id=int(admin),text=text)
+        print(text)
+
     await asyncio.sleep(120)
     await msg.delete()
 
 
 @dp.message(F.text == "/my_info", group | supergroup)
 async def my_info(message: Message):
-    await message.delete()
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except Exception as e:
+        text = f"my_info xabar o'chirishda xatolik: {e}"
+        for admin in ADMINS:
+            await bot.send_message(chat_id=int(admin),text=text)
+        print(text)
     user_id = message.from_user.id
     group_id = message.chat.id
     full_name = message.from_user.full_name
@@ -80,13 +99,25 @@ async def stats(message: Message):
     
     # Foydalanuvchi admin yoki guruh egasi ekanligini tekshirish
     if message.from_user.id not in admin_ids:
-        await message.delete()
+        try:
+            await message.delete()
+        except Exception as e:
+            text = f"stats admin xabar o'chirishda xatolik: {e}"
+            for admin in ADMINS:
+                await bot.send_message(chat_id=int(admin),text=text)
+            print(text)
         msg = await message.answer("❌ Siz admin emassiz!")
         await asyncio.sleep(5)
         await msg.delete()
         return
 
-    await message.delete()
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except Exception as e:
+        text = f"stats xabar o'chirishda xatolik: {e}"
+        for admin in ADMINS:
+            await bot.send_message(chat_id=int(admin),text=text)
+        print(text)
     group_id = message.chat.id
     
     # Berilgan guruh uchun eng ko‘p odam qo‘shgan 10 ta foydalanuvchi statistikasi

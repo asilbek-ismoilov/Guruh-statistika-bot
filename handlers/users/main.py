@@ -117,10 +117,10 @@ async def setphoto_group(message: Message):
 # Global o'zgaruvchilar
 user_warnings = {}
 xaqoratli_sozlar = {
-    "tentak", "jinni", "to‘poy", "to'poy", "axmoq", "ahmoq", "tupoy", "lanati", "xarom",  
+    "tentak", "jinni", "to‘poy", "to'poy", "axmoq", "ahmoq", "tupoy", "lanati", "xarom", "sex", "seks",  
     "telba", "ablah", "iflos", "haromi", "pastkash", "yoqimsiz", "it", "xunuk",  "lox", "lo'x", "lo‘x",
-    "beshqator", "nodon", "kaltafahm", "bachkana", "noshud", "besoqolboz", "bachcha",  
-    "qo‘rqoq", "qo'rqoq", "laganbardor", "xiyonatkor", "sharmanda", "betamiz", "bema'ni", "besharaf"  
+    "beshqator", "nodon", "kaltafahm", "bachkana", "noshud", "besoqolboz", "bachcha", "sike", "yban", "yiban",
+    "qo‘rqoq", "qo'rqoq", "laganbardor", "xiyonatkor", "sharmanda", "betamiz", "bema'ni", "besharaf", "qo'toq" 
 }
 
 
